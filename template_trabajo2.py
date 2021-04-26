@@ -105,8 +105,8 @@ print("Se muestra gráfica...")
 # Función para introducir ruido aleatoriamente en un vector de etiquetas 'y',
 # dada una semilla 'seed'.
 def generar_ruido(y, seed):
-    y_positivo = np.array(np.where([y == 1]))
-    y_negativo = np.array(np.where([y == -1]))
+    y_positivo = np.where(y == 1)[0]
+    y_negativo = np.where(y == -1)[0]
     index_positivo = np.random.choice(y_positivo, y_positivo.size//10, replace=False)
     index_negativo = np.random.choice(y_negativo, y_negativo.size//10, replace=False)
     y[index_positivo] *= -1
