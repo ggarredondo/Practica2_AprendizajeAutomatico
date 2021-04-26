@@ -98,7 +98,7 @@ plt.show()
 
 input("--- Pulsar tecla para continuar al ejercicio 1.2.b ---\n")
 
-# 1.2.b. Modifique de forma aleatoria el 10% de las etiquetas positivas y otro 10% de las
+# 1.2.b. - Modifique de forma aleatoria el 10% de las etiquetas positivas y otro 10% de las
 # negativas y guarde los puntos con sus nuevas etiquetas. Dibuje de nuevo la gráfica anterior.
 
 def generar_ruido(y):
@@ -120,14 +120,22 @@ plt.show()
 
 input("--- Pulsar tecla para continuar al ejercicio 1.2.c ---\n")
 
-# 1.2.c. Visualizar el etiquetado generado en 2b junto con cada una de las gráficas de cada
-# una de las funciones siguientes.
+# 1.2.c. - Supongamos ahora que las siguientes funciones definen la 
+# frontera de clasificación de los puntos de la muestra en lugar de una recta.
+# Visualizar el etiquetado generado en 2b junto con cada una de las gráficas de cada
+# una de las funciones.
 
-###############################################################################
-###############################################################################
-###############################################################################
+def f1(x):
+    return (x[:,0]-10)**2 + (x[:,1]-20)**2 - 400
 
-# EJERCICIO 1.3: Supongamos ahora que las siguientes funciones definen la frontera de clasificación de los puntos de la muestra en lugar de una recta
+def f2(x):
+    return 0.5*(x[:,0]+10)**2 + (x[:,1]-20)**2 - 400
+
+def f3(x):
+    return 0.5*(x[:,0]-10)**2 - (x[:,1]+20)**2 - 400
+
+def f4(x):
+    return x[:,1] - 20*x[:,0]**2 - 5*x[:,0] + 3
 
 def plot_datos_cuad(X, y, fz, title='Point cloud plot', xaxis='x axis', yaxis='y axis'):
     #Preparar datos
@@ -163,10 +171,17 @@ def plot_datos_cuad(X, y, fz, title='Point cloud plot', xaxis='x axis', yaxis='y
     plt.title(title)
     plt.show()
     
+print("Se muestra gŕafica de la primera función...")
     
-#CODIGO DEL ESTUDIANTE
+plot_datos_cuad(x, y, f1, "f(x,y) = (x-10)^2 + (y-20)^2 - 400", "Eje x", "Eje y")
+input("--- Pulsar tecla para visualizar la segunda función ---")
+plot_datos_cuad(x, y, f2, "f(x,y) = 0.5*(x+10)^2 + (y-20)^2 - 400", "Eje x", "Eje y")
+input("--- Pulsar tecla para visualizar la tercera función ---")
+plot_datos_cuad(x, y, f3, "f(x,y) = 0.5*(x-10)^2 - (y+20)^2 - 400", "Eje x", "Eje y")
+input("--- Pulsar tecla para visualizar la cuarta función ---")
+plot_datos_cuad(x, y, f4, "f(x,y) = y - 20*x^2 - 5*x + 3", "Eje x", "Eje y")
 
-input("\n--- Pulsar tecla para continuar ---\n")
+input("\n--- Pulsar tecla para continuar al ejercicio 2 ---\n")
 
 ###############################################################################
 ###############################################################################
