@@ -110,9 +110,10 @@ def generar_ruido(y):
     y[index_negativo] *= 1
     
 print("Se muestra gráfica...")
-generar_ruido(y)
-plt.scatter(x[np.where(y == 1), 0], x[np.where(y == 1), 1], c="purple")
-plt.scatter(x[np.where(y == -1), 0], x[np.where(y == -1), 1], c="orange")
+y_ruido = y.copy()
+generar_ruido(y_ruido)
+plt.scatter(x[np.where(y_ruido == 1), 0], x[np.where(y_ruido == 1), 1], c="purple")
+plt.scatter(x[np.where(y_ruido == -1), 0], x[np.where(y_ruido == -1), 1], c="orange")
 plt.legend(("+1","-1"))
 plt.plot(recta_x, recta_y, c="red")
 plt.title("Ejercicio 1.2.b.")
@@ -173,13 +174,13 @@ def plot_datos_cuad(X, y, fz, title='Point cloud plot', xaxis='x axis', yaxis='y
     
 print("Se muestra gŕafica de la primera función...")
     
-plot_datos_cuad(x, y, f1, "f(x,y) = (x-10)^2 + (y-20)^2 - 400", "Eje x", "Eje y")
+plot_datos_cuad(x, y_ruido, f1, "f(x,y) = (x-10)^2 + (y-20)^2 - 400", "Eje x", "Eje y")
 input("--- Pulsar tecla para visualizar la segunda función ---")
-plot_datos_cuad(x, y, f2, "f(x,y) = 0.5*(x+10)^2 + (y-20)^2 - 400", "Eje x", "Eje y")
+plot_datos_cuad(x, y_ruido, f2, "f(x,y) = 0.5*(x+10)^2 + (y-20)^2 - 400", "Eje x", "Eje y")
 input("--- Pulsar tecla para visualizar la tercera función ---")
-plot_datos_cuad(x, y, f3, "f(x,y) = 0.5*(x-10)^2 - (y+20)^2 - 400", "Eje x", "Eje y")
+plot_datos_cuad(x, y_ruido, f3, "f(x,y) = 0.5*(x-10)^2 - (y+20)^2 - 400", "Eje x", "Eje y")
 input("--- Pulsar tecla para visualizar la cuarta función ---")
-plot_datos_cuad(x, y, f4, "f(x,y) = y - 20*x^2 - 5*x + 3", "Eje x", "Eje y")
+plot_datos_cuad(x, y_ruido, f4, "f(x,y) = y - 20*x^2 - 5*x + 3", "Eje x", "Eje y")
 
 input("\n--- Pulsar tecla para continuar al ejercicio 2 ---\n")
 
@@ -188,20 +189,29 @@ input("\n--- Pulsar tecla para continuar al ejercicio 2 ---\n")
 ###############################################################################
 
 # EJERCICIO 2.1: ALGORITMO PERCEPTRON
+print("-Ejercicio 2-\n")
 
+# 2.a. - Implementar la función que calcula el hiperpalo solución a un problema de clasificación
+# binaria usando el algoritmo PLA.
 def ajusta_PLA(datos, label, max_iter, vini):
-    #CODIGO DEL ESTUDIANTE
-    
-    return ?  
-
-#CODIGO DEL ESTUDIANTE
+    w = vini
+    it = 0
+    for it in range(0, max_iter):
+        w_ant = w
+        for i in range(0, datos.shape[0]):
+            if signo(np.matmul(vini, datos[i])) != signo(label[i]):
+                w = w + label[i]*datos[i]
+        if (w_ant == w).all():
+            break
+    return w, it
 
 # Random initializations
 iterations = []
 for i in range(0,10):
-    #CODIGO DEL ESTUDIANTE
+    w, it = ajusta_PLA(x, y, 1000, np.random.randint(0, 2, size=x.shape[1]))
+    iterations.append(it)
     
-print('Valor medio de iteraciones necesario para converger: {}'.format(np.mean(np.asarray(iterations))))
+print("-2.a.1-\n\nValor medio de iteraciones necesario para converger: {}".format(np.mean(np.asarray(iterations))))
 
 input("\n--- Pulsar tecla para continuar ---\n")
 
