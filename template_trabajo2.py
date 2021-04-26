@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 TRABAJO 2
-Nombre Estudiante: 
+Nombre Estudiante: Guillermo García Arredondo
 """
 import numpy as np
 import matplotlib.pyplot as plt
 
 
 # Fijamos la semilla
-np.random.seed(1)
+seed = 1
+np.random.seed(seed)
 
 
 def simula_unif(N, dim, rango):
@@ -40,22 +41,33 @@ def simula_recta(intervalo):
 
 
 # EJERCICIO 1.1: Dibujar una gráfica con la nube de puntos de salida correspondiente
+print("-Ejercicio 1-\n")
+print("-1.1.-\n\nSe muestra gráfica...")
 
+# 1.1.a. - Dibujar la gráfica para N=50, d=2 y rango=[-50,50] para una distribución uniforme
 x = simula_unif(50, 2, [-50,50])
-#CODIGO DEL ESTUDIANTE
+plt.scatter(x[:,0], x[:,1])
+plt.title("Ejercicio 1.1.a.")
+plt.show()
 
+input("--- Pulsar tecla para continuar al ejercicio 1.1.b ---\n")
+print("Se muestra gráfica...")
+
+# 1.1.b. - Dibujar la gráfica para N=50, d=2 y sigma=[5,7] para una distribución normal
 x = simula_gaus(50, 2, np.array([5,7]))
-#CODIGO DEL ESTUDIANTE
+plt.scatter(x[:,0], x[:,1])
+plt.title("Ejercicio 1.1.b.")
+plt.show()
 
-input("\n--- Pulsar tecla para continuar ---\n")
+input("--- Pulsar tecla para continuar al ejercicio 1.2 ---\n")
 
 
 ###############################################################################
 ###############################################################################
 ###############################################################################
-
 
 # EJERCICIO 1.2: Dibujar una gráfica con la nube de puntos de salida correspondiente
+print("\n-1.2-\n")
 
 # La funcion np.sign(0) da 0, lo que nos puede dar problemas
 def signo(x):
@@ -66,15 +78,47 @@ def signo(x):
 def f(x, y, a, b):
 	return signo(y - a*x - b)
 
-#CODIGO DEL ESTUDIANTE
+# 1.2.a. - Dibujar un gráfico 2D donde los puntos muestren el resultado de su etiqueta.
+# Dibuje también la recta usada para etiquetar.
 
+print("Se muestra gráfica...")
 
-input("\n--- Pulsar tecla para continuar ---\n")
+x = simula_unif(100, 2, [-50,50]);
+a, b = simula_recta([-50,50]);
+y = np.array([f(x, y, a, b) for x, y in x], dtype=np.float64)
+recta_x = np.linspace(-50, 50, 2)
+recta_y = a*recta_x + b
+
+plt.scatter(x[np.where(y == 1), 0], x[np.where(y == 1), 1], c="purple")
+plt.scatter(x[np.where(y == -1), 0], x[np.where(y == -1), 1], c="orange")
+plt.legend(("+1","-1"))
+plt.plot(recta_x, recta_y, c="red")
+plt.title("Ejercicio 1.2.a.")
+plt.show()
+
+input("--- Pulsar tecla para continuar al ejercicio 1.2.b ---\n")
+print("Se muestra gráfica...")
 
 # 1.2.b. Dibujar una gráfica donde los puntos muestren el resultado de su etiqueta, junto con la recta usada para ello
 # Array con 10% de indices aleatorios para introducir ruido
 
-#CODIGO DEL ESTUDIANTE
+# Función para introducir ruido aleatoriamente en un vector de etiquetas 'y',
+# dada una semilla 'seed'.
+def generar_ruido(y, seed):
+    y_positivo = np.array(np.where([y == 1]))
+    y_negativo = np.array(np.where([y == -1]))
+    index_positivo = np.random.choice(y_positivo, y_positivo.size//10, replace=False)
+    index_negativo = np.random.choice(y_negativo, y_negativo.size//10, replace=False)
+    y[index_positivo] *= -1
+    y[index_negativo] *= 1
+    
+generar_ruido(y, seed)
+plt.scatter(x[np.where(y == 1), 0], x[np.where(y == 1), 1], c="purple")
+plt.scatter(x[np.where(y == -1), 0], x[np.where(y == -1), 1], c="orange")
+plt.legend(("+1","-1"))
+plt.plot(recta_x, recta_y, c="red")
+plt.title("Ejercicio 1.2.b.")
+plt.show()
 
 input("\n--- Pulsar tecla para continuar ---\n")
 
