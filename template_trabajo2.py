@@ -44,7 +44,7 @@ def simula_recta(intervalo):
 print("-Ejercicio 1-\n")
 print("-1.1.-\n\nSe muestra gráfica...")
 
-# 1.1.a. - Dibujar la gráfica para N=50, d=2 y rango=[-50,50] para una distribución uniforme
+# 1.1.a. - Dibujar la gráfica para N=50, d=2 y rango=[-50,50] para una distribución uniforme.
 x = simula_unif(50, 2, [-50,50])
 plt.scatter(x[:,0], x[:,1])
 plt.title("Ejercicio 1.1.a.")
@@ -53,7 +53,7 @@ plt.show()
 input("--- Pulsar tecla para continuar al ejercicio 1.1.b ---\n")
 print("Se muestra gráfica...")
 
-# 1.1.b. - Dibujar la gráfica para N=50, d=2 y sigma=[5,7] para una distribución normal
+# 1.1.b. - Dibujar la gráfica para N=50, d=2 y sigma=[5,7] para una distribución normal.
 x = simula_gaus(50, 2, np.array([5,7]))
 plt.scatter(x[:,0], x[:,1])
 plt.title("Ejercicio 1.1.b.")
@@ -97,14 +97,11 @@ plt.title("Ejercicio 1.2.a.")
 plt.show()
 
 input("--- Pulsar tecla para continuar al ejercicio 1.2.b ---\n")
-print("Se muestra gráfica...")
 
-# 1.2.b. Dibujar una gráfica donde los puntos muestren el resultado de su etiqueta, junto con la recta usada para ello
-# Array con 10% de indices aleatorios para introducir ruido
+# 1.2.b. Modifique de forma aleatoria el 10% de las etiquetas positivas y otro 10% de las
+# negativas y guarde los puntos con sus nuevas etiquetas. Dibuje de nuevo la gráfica anterior.
 
-# Función para introducir ruido aleatoriamente en un vector de etiquetas 'y',
-# dada una semilla 'seed'.
-def generar_ruido(y, seed):
+def generar_ruido(y):
     y_positivo = np.where(y == 1)[0]
     y_negativo = np.where(y == -1)[0]
     index_positivo = np.random.choice(y_positivo, y_positivo.size//10, replace=False)
@@ -112,7 +109,8 @@ def generar_ruido(y, seed):
     y[index_positivo] *= -1
     y[index_negativo] *= 1
     
-generar_ruido(y, seed)
+print("Se muestra gráfica...")
+generar_ruido(y)
 plt.scatter(x[np.where(y == 1), 0], x[np.where(y == 1), 1], c="purple")
 plt.scatter(x[np.where(y == -1), 0], x[np.where(y == -1), 1], c="orange")
 plt.legend(("+1","-1"))
@@ -120,7 +118,10 @@ plt.plot(recta_x, recta_y, c="red")
 plt.title("Ejercicio 1.2.b.")
 plt.show()
 
-input("\n--- Pulsar tecla para continuar ---\n")
+input("--- Pulsar tecla para continuar al ejercicio 1.2.c ---\n")
+
+# 1.2.c. Visualizar el etiquetado generado en 2b junto con cada una de las gráficas de cada
+# una de las funciones siguientes.
 
 ###############################################################################
 ###############################################################################
