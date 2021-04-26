@@ -182,14 +182,14 @@ plot_datos_cuad(x, y_ruido, f3, "f(x,y) = 0.5*(x-10)^2 - (y+20)^2 - 400", "Eje x
 input("--- Pulsar tecla para visualizar la cuarta función ---")
 plot_datos_cuad(x, y_ruido, f4, "f(x,y) = y - 20*x^2 - 5*x + 3", "Eje x", "Eje y")
 
-input("\n--- Pulsar tecla para continuar al ejercicio 2 ---\n")
+input("--- Pulsar tecla para continuar al ejercicio 2 ---\n")
 
 ###############################################################################
 ###############################################################################
 ###############################################################################
 
 # EJERCICIO 2.1: ALGORITMO PERCEPTRON
-print("-Ejercicio 2-\n")
+print("\n-Ejercicio 2-\n")
 
 # 2.a. - Implementar la función que calcula el hiperpalo solución a un problema de clasificación
 # binaria usando el algoritmo PLA.
@@ -199,21 +199,28 @@ def ajusta_PLA(datos, label, max_iter, vini):
     for it in range(0, max_iter):
         w_ant = w
         for i in range(0, datos.shape[0]):
-            if signo(np.matmul(vini, datos[i])) != signo(label[i]):
+            if signo(np.matmul(w, datos[i])) != label[i]:
                 w = w + label[i]*datos[i]
         if (w_ant == w).all():
             break
     return w, it
 
+x = np.hstack((np.ones((x.shape[0], 1)), x))
+print("-2.a.1-\n")
+w, it = ajusta_PLA(x, y, 1000, np.zeros(x.shape[1]))
+print("a) el vector 0")
+print("Valor de iteraciones necesario para converger: ", it)
+
 # Random initializations
 iterations = []
 for i in range(0,10):
-    w, it = ajusta_PLA(x, y, 1000, np.random.randint(0, 2, size=x.shape[1]))
+    w, it = ajusta_PLA(x, y, 1000, np.random.rand(x.shape[1]))
     iterations.append(it)
     
-print("-2.a.1-\n\nValor medio de iteraciones necesario para converger: {}".format(np.mean(np.asarray(iterations))))
+print("\nb) vectores de números aleatorios en [0,1] (10 veces)")
+print("Valor medio de iteraciones necesario para converger: {}".format(np.mean(np.asarray(iterations))))
 
-input("\n--- Pulsar tecla para continuar ---\n")
+input("--- Pulsar tecla para continuar al ejercicio 2.a.2 ---\n")
 
 # Ahora con los datos del ejercicio 1.2.b
 
