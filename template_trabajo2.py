@@ -321,12 +321,7 @@ input("\n--- Pulsar tecla para continuar ---\n")
 
 input("\n--- Pulsar tecla para continuar ---\n")
 
-
-###############################################################################
-###############################################################################
-###############################################################################
-#BONUS: Clasificación de Dígitos
-
+# EJERCICIO 3. BONUS: Clasificación de dígitos
 
 # Funcion para leer los datos
 def readData(file_x, file_y, digits, labels):
@@ -359,20 +354,20 @@ x_test, y_test = readData('datos/X_test.npy', 'datos/y_test.npy', [4,8], [-1,1])
 fig, ax = plt.subplots()
 ax.plot(np.squeeze(x[np.where(y == -1),1]), np.squeeze(x[np.where(y == -1),2]), 'o', color='red', label='4')
 ax.plot(np.squeeze(x[np.where(y == 1),1]), np.squeeze(x[np.where(y == 1),2]), 'o', color='blue', label='8')
-ax.set(xlabel='Intensidad promedio', ylabel='Simetria', title='Digitos Manuscritos (TRAINING)')
+ax.set(xlabel='Intensidad promedio', ylabel='Simetría', title='Digitos Manuscritos (TRAINING)')
 ax.set_xlim((0, 1))
 plt.legend()
 plt.show()
+
+input("--- Pulsar tecla para visualizar la muestra de prueba ---")
 
 fig, ax = plt.subplots()
 ax.plot(np.squeeze(x_test[np.where(y_test == -1),1]), np.squeeze(x_test[np.where(y_test == -1),2]), 'o', color='red', label='4')
 ax.plot(np.squeeze(x_test[np.where(y_test == 1),1]), np.squeeze(x_test[np.where(y_test == 1),2]), 'o', color='blue', label='8')
-ax.set(xlabel='Intensidad promedio', ylabel='Simetria', title='Digitos Manuscritos (TEST)')
+ax.set(xlabel='Intensidad promedio', ylabel='Simetría', title='Digitos Manuscritos (TEST)')
 ax.set_xlim((0, 1))
 plt.legend()
 plt.show()
-
-input("\n--- Pulsar tecla para continuar ---\n")
 
 #LINEAR REGRESSION FOR CLASSIFICATION 
 
