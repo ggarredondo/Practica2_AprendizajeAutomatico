@@ -205,9 +205,21 @@ def ajusta_PLA(datos, label, max_iter, vini):
             break
     return w, it
 
+# 2.a.1. - Ejecutar el algoritmo PLA con los datos simulados en el aparado 1.2.a.
+
 x = np.hstack((np.ones((x.shape[0], 1)), x))
 print("-2.a.1-\n")
 w, it = ajusta_PLA(x, y, 1000, np.zeros(x.shape[1]))
+
+w_x = np.linspace(-50, 50)
+w_y = -(w[0]+w[1]*w_x)/w[2]
+plt.scatter(x[np.where(y == 1), 1], x[np.where(y == 1), 2], c="purple")
+plt.scatter(x[np.where(y == -1), 1], x[np.where(y == -1), 2], c="orange")
+plt.plot(w_x, w_y, c="red")
+plt.legend(("PLA","+1","-1"))
+plt.title("Ejercicio 2.a.1. Vector 0")
+plt.show()
+
 print("a) el vector 0")
 print("Valor de iteraciones necesario para converger: ", it)
 
@@ -222,27 +234,79 @@ print("Valor medio de iteraciones necesario para converger: {}".format(np.mean(n
 
 input("--- Pulsar tecla para continuar al ejercicio 2.a.2 ---\n")
 
-# Ahora con los datos del ejercicio 1.2.b
+# 2.a.2. - Ejecutar el algoritmo PLA con los datos simulados en el aparado 1.2.b.
 
-#CODIGO DEL ESTUDIANTE
+w, it = ajusta_PLA(x, y_ruido, 1000, np.zeros(x.shape[1]))
 
+w_x = np.linspace(-50, 50)
+w_y = -(w[0]+w[1]*w_x)/w[2]
+plt.scatter(x[np.where(y_ruido == 1), 1], x[np.where(y_ruido == 1), 2], c="purple")
+plt.scatter(x[np.where(y_ruido == -1), 1], x[np.where(y_ruido == -1), 2], c="orange")
+plt.plot(w_x, w_y, c="red")
+plt.legend(("PLA","+1","-1"))
+plt.title("Ejercicio 2.a.2. Vector 0")
+plt.show()
 
-input("\n--- Pulsar tecla para continuar ---\n")
+print("a) el vector 0")
+print("Valor de iteraciones necesario para converger: ", it)
+
+# Random initializations
+iterations = []
+for i in range(0,10):
+    w, it = ajusta_PLA(x, y_ruido, 1000, np.random.rand(x.shape[1]))
+    iterations.append(it)
+    
+print("\nb) vectores de números aleatorios en [0,1] (10 veces)")
+print("Valor medio de iteraciones necesario para converger: {}".format(np.mean(np.asarray(iterations))))
+
+input("--- Pulsar tecla para continuar al ejercicio 2.b. ---\n")
 
 ###############################################################################
 ###############################################################################
 ###############################################################################
 
-# EJERCICIO 3: REGRESIÓN LOGÍSTICA CON STOCHASTIC GRADIENT DESCENT
+# 2.b. - Regresión logística con Gradiente Descendente Estocástico
 
-def sgdRL(?):
-    #CODIGO DEL ESTUDIANTE
+from sklearn.utils import shuffle
+from scipy.special import expit
 
-    return w
+def Err(x, y, w):
+    return np.log(1+np.exp(np.matmul(np.matmul(-y, w), x))).mean()
+
+def gradErr(x, y, w):
+    return np.matmul(np.matmul(-y, w), expit(np.matmul(np.matmul(-y, w), x)))
+
+# Gradiente Descendente Estocástico (SGD).
+# Como argumentos de entrada tenemos el punto de inicio para empezar a minimizar,
+# los datos x e y, la tasa de aprendizaje η (eta), el error mínimo buscado,
+# el número máximo de iteraciones y el tamaño que tendrán los minibatches.
+def sgdRL(initial_point, x, y, eta, error2get, maxIter, minibatch_size):
+    w = initial_point # Asignamos el punto inicial a w.
+    iterations = 0 # Inicializamos el número de iteraciones a 0.
+    
+    parar = False # Inicializamos una condición de parada que será la que compruebe
+                  # más adelante si se ha alcanzado el mínimo.
+    while not parar and iterations < maxIter: # Mientras no 'parar' y el número de iteraciones no alcance el máximo...
+        x,y = shuffle(x, y, random_state=seed) # Barajamos los datos x e y utilizando la función shuffle
+                                               # para asegurarnos que no se pierda la correspondencia. Además,
+                                               # asignamos la semilla que previamente habíamos establecido. Esto no
+                                               # causará que en cada llamada se baraje de la misma manera, solo que
+                                               # los resultados sean reproducibles. Es decir, la aleatoridad se 
+                                               # repite por ejecución pero no por llamada.
+        # Divido x e y en n minibatches, siendo n el tamaño de x/y dividido entre el tamaño del minibatch                
+        minibatches_x = np.array_split(x, len(x)//minibatch_size)
+        minibatches_y = np.array_split(y, len(y)//minibatch_size)
+        
+        for i in range(0, len(minibatches_x)): # Para cada minibatch...
+            w = w - eta*gradErr(minibatches_x[i], minibatches_y[i], w) # Obtenemos el nuevo w dado wj = wj-η*dEin(w)/dwj .
+            error = Err(minibatches_x[i], minibatches_y[i], w) # Obtenemos el error dado el nuevo w
+            parar = abs(error) < error2get # Comprobamos si el error es menor que el error mínimo buscado.
+            if parar: # Si lo es, terminamos el bucle.
+                break
+        iterations += 1 # Tras iterar para cada minibatch, contamos una iteración y empieza de nuevo el bucle while.
+    return w # Devolvemos el w final.
 
 
-
-#CODIGO DEL ESTUDIANTE
 
 input("\n--- Pulsar tecla para continuar ---\n")
     
