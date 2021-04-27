@@ -306,11 +306,22 @@ def sgdRL(initial_point, x, y, eta, error2get, maxIter, minibatch_size):
         iterations += 1 # Tras iterar para cada minibatch, contamos una iteración y empieza de nuevo el bucle while.
     return w # Devolvemos el w final.
 
+# Consideramos d = 2, χ = [0,2]x[0,2] con probabilidad uniforme de elegir cada x ∈ χ.
+# Seleccionar 100 puntos aleatorios χ.
+X = simula_unif(100, 2, [0,2])
+# Elegir una línea en el plano que pase por χ como la frontera entre f(x) = 1 (donde y toma valores +1) y
+# f(x) = 0 (donde y toma valores -1), para ello seleccionar dos puntos aleatorios de χ y calcular la línea que pasa por ambos.
+a, b = simula_recta([0,2])
+recta_x = np.linspace(0, 2, 2)
+recta_y = a*recta_x + b
 
+plt.scatter(X[:,0], X[:,1])
+plt.plot(recta_x, recta_y, c="red")
+plt.ylim(0,2)
+plt.show()
 
 input("\n--- Pulsar tecla para continuar ---\n")
     
-
 
 # Usar la muestra de datos etiquetada para encontrar nuestra solución g y estimar Eout
 # usando para ello un número suficientemente grande de nuevas muestras (>999).
@@ -350,7 +361,7 @@ x, y = readData('datos/X_train.npy', 'datos/y_train.npy', [4,8], [-1,1])
 x_test, y_test = readData('datos/X_test.npy', 'datos/y_test.npy', [4,8], [-1,1])
 
 
-#mostramos los datos
+# Mostramos los datos
 fig, ax = plt.subplots()
 ax.plot(np.squeeze(x[np.where(y == -1),1]), np.squeeze(x[np.where(y == -1),2]), 'o', color='red', label='4')
 ax.plot(np.squeeze(x[np.where(y == 1),1]), np.squeeze(x[np.where(y == 1),2]), 'o', color='blue', label='8')
