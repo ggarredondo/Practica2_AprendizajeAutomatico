@@ -223,13 +223,14 @@ plt.show()
 print("a) el vector 0")
 print("Valor de iteraciones necesario para converger: ", it)
 
+print("\nb) vectores de números aleatorios en [0,1] (10 veces)")
 # Random initializations
 iterations = []
 for i in range(0,10):
     w, it = ajusta_PLA(x, y, 1000, np.random.rand(x.shape[1]))
+    print("Valor de iteraciones necesario para converger: ", it)
     iterations.append(it)
     
-print("\nb) vectores de números aleatorios en [0,1] (10 veces)")
 print("Valor medio de iteraciones necesario para converger: {}".format(np.mean(np.asarray(iterations))))
 
 input("--- Pulsar tecla para continuar al ejercicio 2.a.2 ---\n")
@@ -250,13 +251,14 @@ plt.show()
 print("a) el vector 0")
 print("Valor de iteraciones necesario para converger: ", it)
 
+print("\nb) vectores de números aleatorios en [0,1] (10 veces)")
 # Random initializations
 iterations = []
 for i in range(0,10):
     w, it = ajusta_PLA(x, y_ruido, 1000, np.random.rand(x.shape[1]))
+    print("Valor de iteraciones necesario para converger: ", it)
     iterations.append(it)
     
-print("\nb) vectores de números aleatorios en [0,1] (10 veces)")
 print("Valor medio de iteraciones necesario para converger: {}".format(np.mean(np.asarray(iterations))))
 
 input("--- Pulsar tecla para continuar al ejercicio 2.b. ---\n")
@@ -276,48 +278,44 @@ def Err(x, y, w):
 def gradErr(x, y, w):
     return np.matmul(np.matmul(-y, w), expit(np.matmul(np.matmul(-y, w), x)))
 
-# Gradiente Descendente Estocástico (SGD).
-# Como argumentos de entrada tenemos el punto de inicio para empezar a minimizar,
-# los datos x e y, la tasa de aprendizaje η (eta), el error mínimo buscado,
-# el número máximo de iteraciones y el tamaño que tendrán los minibatches.
-def sgdRL(initial_point, x, y, eta, error2get, maxIter, minibatch_size):
-    w = initial_point # Asignamos el punto inicial a w.
-    iterations = 0 # Inicializamos el número de iteraciones a 0.
+# Gradiente Descendente Estocástico (SGD) para Regresión Logística.
+def sgdRL(initial_point, x, y, eta, maxIter, minibatch_size):
+    w = initial_point
+    iterations = 0 
     
-    parar = False # Inicializamos una condición de parada que será la que compruebe
-                  # más adelante si se ha alcanzado el mínimo.
-    while not parar and iterations < maxIter: # Mientras no 'parar' y el número de iteraciones no alcance el máximo...
-        x,y = shuffle(x, y, random_state=seed) # Barajamos los datos x e y utilizando la función shuffle
-                                               # para asegurarnos que no se pierda la correspondencia. Además,
-                                               # asignamos la semilla que previamente habíamos establecido. Esto no
-                                               # causará que en cada llamada se baraje de la misma manera, solo que
-                                               # los resultados sean reproducibles. Es decir, la aleatoridad se 
-                                               # repite por ejecución pero no por llamada.
-        # Divido x e y en n minibatches, siendo n el tamaño de x/y dividido entre el tamaño del minibatch                
+    parar = False 
+    while not parar and iterations < maxIter:
+        x,y = shuffle(x, y, random_state=seed)
         minibatches_x = np.array_split(x, len(x)//minibatch_size)
         minibatches_y = np.array_split(y, len(y)//minibatch_size)
         
-        for i in range(0, len(minibatches_x)): # Para cada minibatch...
-            w = w - eta*gradErr(minibatches_x[i], minibatches_y[i], w) # Obtenemos el nuevo w dado wj = wj-η*dEin(w)/dwj .
-            error = Err(minibatches_x[i], minibatches_y[i], w) # Obtenemos el error dado el nuevo w
-            parar = abs(error) < error2get # Comprobamos si el error es menor que el error mínimo buscado.
-            if parar: # Si lo es, terminamos el bucle.
+        for i in range(0, len(minibatches_x)):
+            w_ant = w
+            w = w - eta*gradErr(minibatches_x[i], minibatches_y[i], w) 
+            parar = np.linalg.norm(w_ant - w) < 0.01
+            if parar:
                 break
-        iterations += 1 # Tras iterar para cada minibatch, contamos una iteración y empieza de nuevo el bucle while.
+        iterations += 1
     return w # Devolvemos el w final.
 
 # Consideramos d = 2, χ = [0,2]x[0,2] con probabilidad uniforme de elegir cada x ∈ χ.
 # Seleccionar 100 puntos aleatorios χ.
-X = simula_unif(100, 2, [0,2])
+x = simula_unif(100, 2, [0,2])
 # Elegir una línea en el plano que pase por χ como la frontera entre f(x) = 1 (donde y toma valores +1) y
 # f(x) = 0 (donde y toma valores -1), para ello seleccionar dos puntos aleatorios de χ y calcular la línea que pasa por ambos.
 a, b = simula_recta([0,2])
+# Etiquetar χ respecto a la frontera elegida.
+y = np.array([f(x, y, a, b) for x, y in x], dtype=np.float64)
+
+print("Se muestra gŕafica...")
 recta_x = np.linspace(0, 2, 2)
 recta_y = a*recta_x + b
-
-plt.scatter(X[:,0], X[:,1])
+plt.scatter(x[np.where(y == 1), 0], x[np.where(y == 1), 1], c="purple")
+plt.scatter(x[np.where(y == -1), 0], x[np.where(y == -1), 1], c="orange")
+plt.legend(("+1","-1"))
 plt.plot(recta_x, recta_y, c="red")
 plt.ylim(0,2)
+plt.title("2.b. Muestra de entrenamiento")
 plt.show()
 
 input("\n--- Pulsar tecla para continuar ---\n")
