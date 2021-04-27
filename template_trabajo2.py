@@ -319,7 +319,8 @@ plt.title("2.b. Muestra de entrenamiento")
 plt.show()
 
 input("\n--- Pulsar tecla para continuar ---\n")
-    
+# x = np.hstack((np.ones((x.shape[0], 1)), x))
+# sgd
 
 # Usar la muestra de datos etiquetada para encontrar nuestra solución g y estimar Eout
 # usando para ello un número suficientemente grande de nuevas muestras (>999).
