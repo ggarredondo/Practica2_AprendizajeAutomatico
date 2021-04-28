@@ -402,27 +402,6 @@ x, y = readData('datos/X_train.npy', 'datos/y_train.npy', [4,8], [-1,1])
 # Lectura de los datos para el test
 x_test, y_test = readData('datos/X_test.npy', 'datos/y_test.npy', [4,8], [-1,1])
 
-print("Se muestra gráfica de la muestra de entrenamiento...")
-# Mostramos los datos
-fig, ax = plt.subplots()
-ax.plot(np.squeeze(x[np.where(y == -1),1]), np.squeeze(x[np.where(y == -1),2]), 'o', color='red', label='4')
-ax.plot(np.squeeze(x[np.where(y == 1),1]), np.squeeze(x[np.where(y == 1),2]), 'o', color='blue', label='8')
-ax.set(xlabel='Intensidad promedio', ylabel='Simetría', title='Digitos Manuscritos (TRAINING)')
-ax.set_xlim((0, 1))
-plt.legend()
-plt.show()
-
-input("--- Pulsar tecla para visualizar la muestra de prueba ---")
-
-fig, ax = plt.subplots()
-ax.plot(np.squeeze(x_test[np.where(y_test == -1),1]), np.squeeze(x_test[np.where(y_test == -1),2]), 'o', color='red', label='4')
-ax.plot(np.squeeze(x_test[np.where(y_test == 1),1]), np.squeeze(x_test[np.where(y_test == 1),2]), 'o', color='blue', label='8')
-ax.set(xlabel='Intensidad promedio', ylabel='Simetría', title='Digitos Manuscritos (TEST)')
-ax.set_xlim((0, 1))
-plt.legend()
-plt.show()
-
-input("--- Pulsar tecla para continuar al ejercicio 3.2. ---\n")
 
 # EJERCICIO 3.2: Usar Regresión Lineal y aplicar PLA-Pocket como mejora.
 
@@ -472,6 +451,41 @@ print("Ein: ", MSE(x, y, w_pinv))
 
 print("\n-POCKET-")
 print("Ein: ", ErrorPLA(x, y, w_pocket))
+
+recta_x = np.linspace(0, 1, 2)
+pinv_y = -(w_pinv[0]+w_pinv[1]*recta_x)/w_pinv[2]
+pocket_y = -(w_pocket[0]+w_pocket[1]*recta_x)/w_pocket[2]
+
+# Mostramos los datos
+fig, ax = plt.subplots()
+ax.plot(np.squeeze(x[np.where(y == -1),1]), np.squeeze(x[np.where(y == -1),2]), 'o', color='red', label='4')
+ax.plot(np.squeeze(x[np.where(y == 1),1]), np.squeeze(x[np.where(y == 1),2]), 'o', color='blue', label='8')
+ax.plot(recta_x, pinv_y, color='purple', label='Pinv')
+ax.plot(recta_x, pocket_y, color='orange', label='Pocket')
+ax.set(xlabel='Intensidad promedio', ylabel='Simetría', title='Digitos Manuscritos (TRAINING)')
+ax.set_xlim((0, 1))
+ax.set_ylim((-7, -1))
+plt.legend()
+plt.show()
+
+input("--- Pulsar tecla para visualizar la muestra de prueba ---")
+
+fig, ax = plt.subplots()
+ax.plot(np.squeeze(x_test[np.where(y_test == -1),1]), np.squeeze(x_test[np.where(y_test == -1),2]), 'o', color='red', label='4')
+ax.plot(np.squeeze(x_test[np.where(y_test == 1),1]), np.squeeze(x_test[np.where(y_test == 1),2]), 'o', color='blue', label='8')
+ax.plot(recta_x, pinv_y, color='purple', label='Pinv')
+ax.plot(recta_x, pocket_y, color='orange', label='Pocket')
+ax.set(xlabel='Intensidad promedio', ylabel='Simetría', title='Digitos Manuscritos (TEST)')
+ax.set_xlim((0, 1))
+ax.set_ylim((-7, -1))
+plt.legend()
+plt.show()
+
+print("-PSEUDOINVERSA-")
+print("Eout: ", MSE(x_test, y_test, w_pinv))
+
+print("\n-POCKET-")
+print("Eout: ", ErrorPLA(x_test, y_test, w_pocket))
   
     
   
