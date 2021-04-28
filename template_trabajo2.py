@@ -91,8 +91,8 @@ recta_y = a*recta_x + b
 
 plt.scatter(x[np.where(y == 1), 0], x[np.where(y == 1), 1], c="purple")
 plt.scatter(x[np.where(y == -1), 0], x[np.where(y == -1), 1], c="orange")
-plt.legend(("+1","-1"))
 plt.plot(recta_x, recta_y, c="red")
+plt.legend(("Frontera","+1","-1"))
 plt.title("Ejercicio 1.2.a.")
 plt.show()
 
@@ -114,8 +114,8 @@ y_ruido = y.copy()
 generar_ruido(y_ruido)
 plt.scatter(x[np.where(y_ruido == 1), 0], x[np.where(y_ruido == 1), 1], c="purple")
 plt.scatter(x[np.where(y_ruido == -1), 0], x[np.where(y_ruido == -1), 1], c="orange")
-plt.legend(("+1","-1"))
 plt.plot(recta_x, recta_y, c="red")
+plt.legend(("Frontera","+1","-1"))
 plt.title("Ejercicio 1.2.b.")
 plt.show()
 
@@ -273,30 +273,28 @@ from sklearn.utils import shuffle
 from scipy.special import expit
 
 def Err(x, y, w):
-    return np.log(1+np.exp(np.matmul(np.matmul(-y, w), x))).mean()
+    return np.log(1+np.exp(-y * np.dot(w, x.T))).mean()
 
 def gradErr(x, y, w):
-    return np.matmul(np.matmul(-y, w), expit(np.matmul(np.matmul(-y, w), x)))
+    return np.dot(np.dot(-y, x), expit(np.dot(-y, np.dot(w, x.T))))
 
 # Gradiente Descendente Estocástico (SGD) para Regresión Logística.
-def sgdRL(initial_point, x, y, eta, maxIter, minibatch_size):
+def sgdRL(initial_point, x, y, eta, minibatch_size):
     w = initial_point
-    iterations = 0 
+    epocas = 0 
     
     parar = False 
-    while not parar and iterations < maxIter:
+    while not parar:
         x,y = shuffle(x, y, random_state=seed)
         minibatches_x = np.array_split(x, len(x)//minibatch_size)
         minibatches_y = np.array_split(y, len(y)//minibatch_size)
         
+        w_ant = w
         for i in range(0, len(minibatches_x)):
-            w_ant = w
             w = w - eta*gradErr(minibatches_x[i], minibatches_y[i], w) 
-            parar = np.linalg.norm(w_ant - w) < 0.01
-            if parar:
-                break
-        iterations += 1
-    return w # Devolvemos el w final.
+        parar = np.linalg.norm(w_ant - w) < 0.01
+        epocas += 1
+    return w, epocas # Devolvemos el w final.
 
 # Consideramos d = 2, χ = [0,2]x[0,2] con probabilidad uniforme de elegir cada x ∈ χ.
 # Seleccionar 100 puntos aleatorios χ.
@@ -307,31 +305,39 @@ a, b = simula_recta([0,2])
 # Etiquetar χ respecto a la frontera elegida.
 y = np.array([f(x, y, a, b) for x, y in x], dtype=np.float64)
 
-print("Se muestra gŕafica...")
+print("Se muestra gráfica...")
 recta_x = np.linspace(0, 2, 2)
 recta_y = a*recta_x + b
 plt.scatter(x[np.where(y == 1), 0], x[np.where(y == 1), 1], c="purple")
 plt.scatter(x[np.where(y == -1), 0], x[np.where(y == -1), 1], c="orange")
-plt.legend(("+1","-1"))
 plt.plot(recta_x, recta_y, c="red")
+plt.legend(("Frontera","+1","-1"))
 plt.ylim(0,2)
 plt.title("2.b. Muestra de entrenamiento")
 plt.show()
 
-input("\n--- Pulsar tecla para continuar ---\n")
-# x = np.hstack((np.ones((x.shape[0], 1)), x))
-# sgd
+input("--- Pulsar tecla para continuar ---\n")
+# hacer 100 experimentos
+x = np.hstack((np.ones((x.shape[0], 1)), x))
+w, epocas = sgdRL(np.zeros(x.shape[1]), x, y, 0.01, 1)
+recta_x = np.linspace(0, 2, 2)
+recta_y = -(w[0]+w[1]*recta_x)/w[2]
 
-# Usar la muestra de datos etiquetada para encontrar nuestra solución g y estimar Eout
-# usando para ello un número suficientemente grande de nuevas muestras (>999).
+plt.scatter(x[np.where(y == 1), 1], x[np.where(y == 1), 2], c="purple")
+plt.scatter(x[np.where(y == -1), 1], x[np.where(y == -1), 2], c="orange")
+plt.plot(recta_x, recta_y, c="red")
+plt.legend(("SGDRL","+1","-1"))
+plt.ylim(0,2)
+plt.title("2.b. Muestra de entrenamiento")
+plt.show()
 
+print(Err(x, y, w))
+# hacer 100 experimentos
 
-#CODIGO DEL ESTUDIANTE
-
-
-input("\n--- Pulsar tecla para continuar ---\n")
+input("--- Pulsar tecla para continuar al ejercicio 3 ---\n")
 
 # EJERCICIO 3. BONUS: Clasificación de dígitos
+print("\n-Ejercicio 3-")
 
 # Funcion para leer los datos
 def readData(file_x, file_y, digits, labels):
