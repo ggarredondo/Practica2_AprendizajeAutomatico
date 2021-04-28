@@ -294,7 +294,7 @@ def sgdRL(initial_point, x, y, eta, minibatch_size):
             w = w - eta*gradErr(minibatches_x[i], minibatches_y[i], w) 
         parar = np.linalg.norm(w_ant - w) < 0.01
         epocas += 1
-    return w, epocas # Devolvemos el w final.
+    return w, epocas
 
 # Consideramos d = 2, χ = [0,2]x[0,2] con probabilidad uniforme de elegir cada x ∈ χ.
 # Seleccionar 100 puntos aleatorios χ.
@@ -422,25 +422,72 @@ ax.set_xlim((0, 1))
 plt.legend()
 plt.show()
 
+input("--- Pulsar tecla para continuar al ejercicio 3.2. ---\n")
+
+# EJERCICIO 3.2: Usar Regresión Lineal y aplicar PLA-Pocket como mejora.
+
 #LINEAR REGRESSION FOR CLASSIFICATION 
 
-#CODIGO DEL ESTUDIANTE
+# Error cuadrático para regresión lineal. E(hw) = 1/N*Σ(hw(xn) - yn)^2
+# Se utiliza matmul para la correcta multiplicación de matrices de 'x' y 'w', lo cual
+# nos da una fila de los valores estimados a la cual restamos 'y'. Hacemos el cuadrado
+# de la diferencia y hacemos la media.
+def MSE(x,y,w):
+    return ((np.matmul(x,w) - y)**2).mean(axis=0)
 
-
-input("\n--- Pulsar tecla para continuar ---\n")
-
-
+# Pseudoinversa. w = X†*y
+# Para ello simplemente utilizamos matmul para multiplicar la pseudoinversa dada por
+# la función pinv de numpy con y.
+def pseudoinverse(x, y):
+    return np.matmul(np.linalg.pinv(x), y)
 
 #POCKET ALGORITHM
+
+def ErrorPLA(datos, label, w):
+    total = 0
+    for i in range(0, datos.shape[0]):
+        if signo(np.matmul(w, datos[i])) != label[i]:
+            total += 1
+    return total/datos.shape[0]
+
+def PLA_pocket(datos, label, max_iter, vini):
+    w = vini
+    error_min = ErrorPLA(datos, label, w)
+    it = 0
+    for it in range(0, max_iter):
+        for i in range(0, datos.shape[0]):
+            if signo(np.matmul(w, datos[i])) != label[i]:
+                w1 = w + label[i]*datos[i]
+                error = ErrorPLA(datos, label, w1)
+                if error_min > error:
+                    w = w1
+                    error_min = error
+    return w, it
+
+w_pinv = pseudoinverse(x, y)
+w_pocket, it = PLA_pocket(x, y, 100, np.zeros(x.shape[1]))
+
+print("-PSEUDOINVERSA-")
+print("Ein: ", MSE(x, y, w_pinv))
+
+print("\n-POCKET-")
+print("Ein: ", ErrorPLA(x, y, w_pocket))
   
-#CODIGO DEL ESTUDIANTE
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
 
-
-
-
-input("\n--- Pulsar tecla para continuar ---\n")
-
-
-#COTA SOBRE EL ERROR
-
-#CODIGO DEL ESTUDIANTE
