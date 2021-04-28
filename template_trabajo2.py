@@ -298,41 +298,82 @@ def sgdRL(initial_point, x, y, eta, minibatch_size):
 
 # Consideramos d = 2, χ = [0,2]x[0,2] con probabilidad uniforme de elegir cada x ∈ χ.
 # Seleccionar 100 puntos aleatorios χ.
-x = simula_unif(100, 2, [0,2])
+x_train = simula_unif(100, 2, [0,2])
 # Elegir una línea en el plano que pase por χ como la frontera entre f(x) = 1 (donde y toma valores +1) y
 # f(x) = 0 (donde y toma valores -1), para ello seleccionar dos puntos aleatorios de χ y calcular la línea que pasa por ambos.
-a, b = simula_recta([0,2])
+a_train, b_train = simula_recta([0,2])
 # Etiquetar χ respecto a la frontera elegida.
-y = np.array([f(x, y, a, b) for x, y in x], dtype=np.float64)
+y_train = np.array([f(x, y, a_train, b_train) for x, y in x_train], dtype=np.float64)
+# Estimar la función para la muestra de entrenamiento usando SGD.
+x_train = np.hstack((np.ones((x_train.shape[0], 1)), x_train))
+w, epocas = sgdRL(np.zeros(x_train.shape[1]), x_train, y_train, 0.01, 1)
 
-print("Se muestra gráfica...")
-recta_x = np.linspace(0, 2, 2)
-recta_y = a*recta_x + b
-plt.scatter(x[np.where(y == 1), 0], x[np.where(y == 1), 1], c="purple")
-plt.scatter(x[np.where(y == -1), 0], x[np.where(y == -1), 1], c="orange")
+# Evaluar el error de salida Eout para una muestra grande de datos (> 999).
+x_test = simula_unif(1000, 2, [0,2])
+a_test, b_test = simula_recta([0,2])
+y_test = np.array([f(x, y, a_test, b_test) for x, y in x_test], dtype=np.float64)
+x_test = np.hstack((np.ones((x_test.shape[0], 1)), x_test))
+
+# Se muestra por pantalla los resultados obtenidos para el primer experimento,
+# incluyendo número de épocas, error de entrada Ein y error de salida Eout.
+print("-Primer experimento-\n")
+print("Épocas: ", epocas)
+print("Ein: ", Err(x_train, y_train, w))
+
+recta_x = np.linspace(0,2,2)
+recta_y = a_train*recta_x + b_train
+sgd_y = -(w[0]+w[1]*recta_x)/w[2]
+plt.scatter(x_train[np.where(y_train == 1), 1], x_train[np.where(y_train == 1), 2], c="purple")
+plt.scatter(x_train[np.where(y_train == -1), 1], x_train[np.where(y_train == -1), 2], c="orange")
 plt.plot(recta_x, recta_y, c="red")
-plt.legend(("Frontera","+1","-1"))
+plt.plot(recta_x, sgd_y, c="blue")
+plt.legend(("Frontera","SGD","+1","-1"), loc="upper left")
 plt.ylim(0,2)
-plt.title("2.b. Muestra de entrenamiento")
+plt.title("2.b. Primer experimento / Muestra de entrenamiento")
 plt.show()
 
-input("--- Pulsar tecla para continuar ---\n")
-# hacer 100 experimentos
-x = np.hstack((np.ones((x.shape[0], 1)), x))
-w, epocas = sgdRL(np.zeros(x.shape[1]), x, y, 0.01, 1)
-recta_x = np.linspace(0, 2, 2)
-recta_y = -(w[0]+w[1]*recta_x)/w[2]
+input("--- Pulsar tecla para visualizar la muestra de prueba en el primer experimento ---\n")
+print("Eout: ", Err(x_test, y_test, w))
 
-plt.scatter(x[np.where(y == 1), 1], x[np.where(y == 1), 2], c="purple")
-plt.scatter(x[np.where(y == -1), 1], x[np.where(y == -1), 2], c="orange")
+recta_x = np.linspace(0,2,2)
+recta_y = a_test*recta_x + b_test
+sgd_y = -(w[0]+w[1]*recta_x)/w[2]
+plt.scatter(x_test[np.where(y_test == 1), 1], x_test[np.where(y_test == 1), 2], c="purple")
+plt.scatter(x_test[np.where(y_test == -1), 1], x_test[np.where(y_test == -1), 2], c="orange")
 plt.plot(recta_x, recta_y, c="red")
-plt.legend(("SGDRL","+1","-1"))
+plt.plot(recta_x, sgd_y, c="blue")
+plt.legend(("Frontera","SGD","+1","-1"), loc="upper left")
 plt.ylim(0,2)
-plt.title("2.b. Muestra de entrenamiento")
+plt.title("2.b. Primer experimento / Muestra de prueba")
 plt.show()
 
-print(Err(x, y, w))
-# hacer 100 experimentos
+input("--- Pulsar tecla para continuar con los 100 experimentos ---\n")
+
+# Repita el experimento 100 veces.
+n = 100
+Ein_promedio = 0
+Eout_promedio = 0
+Epocas_promedio = 0
+for i in range(0, n):
+    # Generar muestra de entrenamiento, calcular w y evaluar Ein
+    x_train = simula_unif(100, 2, [0,2])
+    a_train, b_train = simula_recta([0,2])
+    y_train = np.array([f(x, y, a_train, b_train) for x, y in x_train], dtype=np.float64)
+    x_train = np.hstack((np.ones((x_train.shape[0], 1)), x_train))
+    w, epocas = sgdRL(np.zeros(x_train.shape[1]), x_train, y_train, 0.01, 1)
+    Ein_promedio += Err(x_train, y_train, w)
+    Epocas_promedio += epocas
+    
+    # Generar muestra de prueba y evaluar Eout
+    x_test = simula_unif(1000, 2, [0,2])
+    a_test, b_test = simula_recta([0,2])
+    y_test = np.array([f(x, y, a_test, b_test) for x, y in x_test], dtype=np.float64)
+    x_test = np.hstack((np.ones((x_test.shape[0], 1)), x_test))
+    Eout_promedio += Err(x_test, y_test, w)
+
+print("Número de épocas promedio: ", Epocas_promedio/n)
+print("Ein promedio: ", Ein_promedio/n)
+print("Eout promedio: ", Eout_promedio/n)
 
 input("--- Pulsar tecla para continuar al ejercicio 3 ---\n")
 
