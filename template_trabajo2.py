@@ -305,22 +305,28 @@ def gradErr(x, y, w):
     return np.dot(np.dot(-y, x), expit(np.dot(-y, np.dot(w, x.T))))
 
 # Gradiente Descendente Estocástico (SGD) para Regresión Logística.
+# Como argumentos de entrada tenemos el punto de inicio para empezar a minimizar,
+# los datos x e y, la tasa de aprendizaje η (eta), el número máximo de iteraciones y
+# el tamaño de cada minibatch.
 def sgdRL(initial_point, x, y, eta, minibatch_size):
-    w = initial_point
-    epocas = 0 
+    w = initial_point # Asignamos el punto de inicio a w.
+    epocas = 0 # Inicializamos el numero de épocas a 0.
     
     parar = False 
-    while not parar:
+    while not parar: # Mientras no parar...
+        # Barajamos x e y en el mismo orden usando 'shuffle' de sklearn y dividmos
+        # el conjunto de datos en minibatches.
         x,y = shuffle(x, y, random_state=seed)
         minibatches_x = np.array_split(x, len(x)//minibatch_size)
         minibatches_y = np.array_split(y, len(y)//minibatch_size)
         
-        w_ant = w
-        for i in range(0, len(minibatches_x)):
-            w = w - eta*gradErr(minibatches_x[i], minibatches_y[i], w) 
-        parar = np.linalg.norm(w_ant - w) < 0.01
-        epocas += 1
-    return w, epocas
+        w_ant = w # Guardamos el w previo a recorrer los minibatches.
+        for i in range(0, len(minibatches_x)): # Para cada minibatch...
+            w = w - eta*gradErr(minibatches_x[i], minibatches_y[i], w) # Obtenemos el nuevo w dado wj = wj-η*dEin(w)/dwj .
+        parar = np.linalg.norm(w_ant - w) < 0.01 # Comprobamos que la norma de la diferencia entre el w anterior
+                                                 # y el w calculado sea menor que 0.01, en cuyo caso terminaría el algoritmo.
+        epocas += 1 # Y se suma una época.
+    return w, epocas # Se devuelve el w resultante y el número de épocas total.
 
 # Consideramos d = 2, χ = [0,2]x[0,2] con probabilidad uniforme de elegir cada x ∈ χ.
 # Seleccionar 100 puntos aleatorios χ.
@@ -339,8 +345,8 @@ x_test = simula_unif(1000, 2, [0,2])
 y_test = np.array([f(x, y, a, b) for x, y in x_test], dtype=np.float64)
 x_test = np.hstack((np.ones((x_test.shape[0], 1)), x_test))
 
-# Se muestra por pantalla los resultados obtenidos para el primer experimento,
-# incluyendo número de épocas, error de entrada Ein y error de salida Eout.
+# Se visualizan los resultados obtenidos para el primer experimento para la
+# muestra de entrenamiento, incluyendo gráfica, error de entrada Ein y número de épocas.
 print("-Primer experimento-\n")
 print("Épocas: ", epocas)
 print("Ein: ", Err(x_train, y_train, w))
@@ -357,6 +363,8 @@ plt.ylim(0,2)
 plt.title("2.b. Primer experimento / Muestra de entrenamiento")
 plt.show()
 
+# Se visualizan los resultados obtenidos para el primer experimento para la
+# muestra de test, incluyendo gráfica, error de salida Eout y número de épocas.
 input("--- Pulsar tecla para visualizar la muestra de prueba en el primer experimento ---\n")
 print("Eout: ", Err(x_test, y_test, w))
 
@@ -392,6 +400,7 @@ for i in range(0, n):
     x_test = np.hstack((np.ones((x_test.shape[0], 1)), x_test))
     Eout_promedio += Err(x_test, y_test, w)
 
+# Se imprime por pantalla los resultados promedios de repetir el experimento 100 veces.
 print("Número de épocas promedio: ", Epocas_promedio/n)
 print("Ein promedio: ", Ein_promedio/n)
 print("Eout promedio: ", Eout_promedio/n)
