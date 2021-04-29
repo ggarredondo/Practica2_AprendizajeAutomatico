@@ -432,19 +432,16 @@ def ErrorPLA(datos, label, w):
 def PLA_pocket(datos, label, max_iter, vini):
     w = vini
     error_min = ErrorPLA(datos, label, w)
-    it = 0
     for it in range(0, max_iter):
-        for i in range(0, datos.shape[0]):
-            if signo(np.matmul(w, datos[i])) != label[i]:
-                w1 = w + label[i]*datos[i]
-                error = ErrorPLA(datos, label, w1)
-                if error_min > error:
-                    w = w1
-                    error_min = error
-    return w, it
+        w1, one_update = ajusta_PLA(datos, label, 1, w)
+        error = ErrorPLA(datos, label, w1)
+        if error_min > error:
+            w = w1
+            error_min = error
+    return w
 
 w_pinv = pseudoinverse(x, y)
-w_pocket, it = PLA_pocket(x, y, 100, np.zeros(x.shape[1]))
+w_pocket = PLA_pocket(x, y, 1000, w_pinv)
 
 print("-PSEUDOINVERSA-")
 print("Ein: ", MSE(x, y, w_pinv))
@@ -468,7 +465,7 @@ ax.set_ylim((-7, -1))
 plt.legend()
 plt.show()
 
-input("--- Pulsar tecla para visualizar la muestra de prueba ---")
+input("--- Pulsar tecla para mostrar los resultados de la muestra de prueba ---\n")
 
 fig, ax = plt.subplots()
 ax.plot(np.squeeze(x_test[np.where(y_test == -1),1]), np.squeeze(x_test[np.where(y_test == -1),2]), 'o', color='red', label='4')
