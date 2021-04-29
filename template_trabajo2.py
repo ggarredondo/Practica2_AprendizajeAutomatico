@@ -354,7 +354,6 @@ Epocas_promedio = 0
 for i in range(0, n):
     # Generar muestra de entrenamiento, calcular w y evaluar Ein.
     x_train = simula_unif(100, 2, [0,2])
-    a, b = simula_recta([0,2])
     y_train = np.array([f(x, y, a, b) for x, y in x_train], dtype=np.float64)
     x_train = np.hstack((np.ones((x_train.shape[0], 1)), x_train))
     w, epocas = sgdRL(np.zeros(x_train.shape[1]), x_train, y_train, 0.01, 1)
