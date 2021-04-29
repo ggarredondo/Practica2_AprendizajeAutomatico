@@ -91,8 +91,8 @@ a, b = simula_recta([-50,50]); # Obtenemos una recta dada por dos puntos aleator
 y = np.array([f(x, y, a, b) for x, y in x], dtype=np.float64) # Etiquetamos los puntos según su posición respecto a la recta.
 
 # Para mostrar los datos y la recta en una gráfica...
-recta_x = np.linspace(-50, 50, 2) # Obtenemos dos puntos aleatorios en el intervalo anterior.
-recta_y = a*recta_x + b # Calculamos las coordenadas y para los dos puntos aleatorios antes obtenidos.
+recta_x = np.linspace(-50, 50, 2) # Obtenemos dos puntos equidistantes en el intervalo anterior.
+recta_y = a*recta_x + b # Calculamos las coordenadas y para los dos puntos aleatorios antes obtenidos (y = a*x + b).
 plt.scatter(x[np.where(y == 1), 0], x[np.where(y == 1), 1], c="purple") # Los puntos con signo positivo se dibujan en la
                                                                         # gráfica con color morado.
 plt.scatter(x[np.where(y == -1), 0], x[np.where(y == -1), 1], c="orange") # Los puntos con signo negativo se dibujan en la
@@ -225,14 +225,16 @@ def ajusta_PLA(datos, label, max_iter, vini):
             break
     return w, it
 
-# 2.a.1. - Ejecutar el algoritmo PLA con los datos simulados en el aparado 1.2.a.
+# 2.a.1. - Ejecutar el algoritmo PLA con los datos simulados en el apartado 1.2.a.
 
-x = np.hstack((np.ones((x.shape[0], 1)), x))
+x = np.hstack((np.ones((x.shape[0], 1)), x)) # Se añade una columna de unos a la muestra de datos 'x'.
 print("-2.a.1-\n")
-w, it = ajusta_PLA(x, y, 1000, np.zeros(x.shape[1]))
+w, it = ajusta_PLA(x, y, 1000, np.zeros(x.shape[1])) # Y se ejecuta PLA para esos datos, etiquetas sin ruido, vector inicial 0
+                                                     # y 1000 iteraciones para asegurarnos que encuentra el óptimo si puede.
 
-w_x = np.linspace(-50, 50)
-w_y = -(w[0]+w[1]*w_x)/w[2]
+# Para visualizar los resultados en una gráfica...
+w_x = np.linspace(-50, 50) # Obtenemos dos puntos equidistantes en el intervalo en el que se generaron los datos.
+w_y = -(w[0]+w[1]*w_x)/w[2] # Despejamos x2 de la ecuación w0 + w1*x1 + w2*x2 = 0 para obtener las coordenadas en el eje y.
 plt.scatter(x[np.where(y == 1), 1], x[np.where(y == 1), 2], c="purple")
 plt.scatter(x[np.where(y == -1), 1], x[np.where(y == -1), 2], c="orange")
 plt.plot(w_x, w_y, c="red")
@@ -244,7 +246,8 @@ print("a) el vector 0")
 print("Valor de iteraciones necesario para converger: ", it)
 
 print("\nb) vectores de números aleatorios en [0,1] (10 veces)")
-# Random initializations
+# Se ejecuta PLA para vectores iniciales aleatorios en [0,1] 10 veces y se guarda el número de iteraciones para
+# luego obtener el promedio.
 iterations = []
 for i in range(0,10):
     w, it = ajusta_PLA(x, y, 1000, np.random.rand(x.shape[1]))
@@ -257,8 +260,9 @@ input("--- Pulsar tecla para continuar al ejercicio 2.a.2 ---\n")
 
 # 2.a.2. - Ejecutar el algoritmo PLA con los datos simulados en el aparado 1.2.b.
 
-w, it = ajusta_PLA(x, y_ruido, 1000, np.zeros(x.shape[1]))
+w, it = ajusta_PLA(x, y_ruido, 1000, np.zeros(x.shape[1])) # Se ejecuta PLA para las etiquetas con ruido y vector inicial 0.
 
+# Se muestran los resultados en una gráfica.
 w_x = np.linspace(-50, 50)
 w_y = -(w[0]+w[1]*w_x)/w[2]
 plt.scatter(x[np.where(y_ruido == 1), 1], x[np.where(y_ruido == 1), 2], c="purple")
@@ -272,7 +276,7 @@ print("a) el vector 0")
 print("Valor de iteraciones necesario para converger: ", it)
 
 print("\nb) vectores de números aleatorios en [0,1] (10 veces)")
-# Random initializations
+# Se ejecuta PLA para vectores iniciales aleatorios en [0,1] 10 veces
 iterations = []
 for i in range(0,10):
     w, it = ajusta_PLA(x, y_ruido, 1000, np.random.rand(x.shape[1]))
@@ -289,12 +293,14 @@ input("--- Pulsar tecla para continuar al ejercicio 2.b. ---\n")
 
 # 2.b. - Regresión logística con Gradiente Descendente Estocástico
 
-from sklearn.utils import shuffle
-from scipy.special import expit
+from sklearn.utils import shuffle # Para barajar los minibatches en SGD.
+from scipy.special import expit # Función sigmoide para el error en regresión logística.
 
+# Función de error para Regresión Logística. Ein = 1/N Σ ln(1 + e^(-yi*w*xi))
 def Err(x, y, w):
     return np.log(1+np.exp(-y * np.dot(w, x.T))).mean()
 
+# Función gradiente del error de Regresión Logística. ▽Ein(w) = 1/N Σ(-yi*xi*σ(-yi*w*xi))
 def gradErr(x, y, w):
     return np.dot(np.dot(-y, x), expit(np.dot(-y, np.dot(w, x.T))))
 
