@@ -45,28 +45,29 @@ print("-Ejercicio 1-\n")
 print("-1.1.-\n\nSe muestra gráfica...")
 
 # 1.1.a. - Dibujar la gráfica para N=50, d=2 y rango=[-50,50] para una distribución uniforme.
-x = simula_unif(50, 2, [-50,50])
-plt.scatter(x[:,0], x[:,1])
+x = simula_unif(50, 2, [-50,50]) # Extraemos 50 datos aleatorios de 2 dimensiones de una distribución uniforme
+                                 # en el intervalo [-50,50].
+plt.scatter(x[:,0], x[:,1]) # Los mostramos en una gráfica como nube de puntos.
 plt.title("Ejercicio 1.1.a.")
 plt.show()
 
 input("--- Pulsar tecla para continuar al ejercicio 1.1.b ---\n")
 print("Se muestra gráfica...")
 
-# 1.1.b. - Dibujar la gráfica para N=50, d=2 y sigma=[5,7] para una distribución normal.
-x = simula_gaus(50, 2, np.array([5,7]))
-plt.scatter(x[:,0], x[:,1])
+# 1.1.b. - Dibujar la gráfica para N=50, d=2 y sigma=[5,7] para una distribución normal/gaussiana.
+x = simula_gaus(50, 2, np.array([5,7])) # Extraemos 50 datos aleatorios de 2 dimensiones de una distribución normal
+                                        # en el intervalo [-50,50].
+plt.scatter(x[:,0], x[:,1]) # Los mostarmos en una gráfica como nube de puntos.
 plt.title("Ejercicio 1.1.b.")
 plt.show()
 
 input("--- Pulsar tecla para continuar al ejercicio 1.2 ---\n")
 
-
 ###############################################################################
 ###############################################################################
 ###############################################################################
 
-# EJERCICIO 1.2: Dibujar una gráfica con la nube de puntos de salida correspondiente
+# EJERCICIO 1.2: Valoración de la influencia del ruido en la selección de la complejidad de la clase.
 print("\n-1.2-\n")
 
 # La funcion np.sign(0) da 0, lo que nos puede dar problemas
@@ -75,6 +76,8 @@ def signo(x):
 		return 1
 	return -1
 
+# Función f para comprobar si un punto está por encima y por debajo de una recta
+# dada por a y b (y = a*x + b)
 def f(x, y, a, b):
 	return signo(y - a*x - b)
 
@@ -83,15 +86,19 @@ def f(x, y, a, b):
 
 print("Se muestra gráfica...")
 
-x = simula_unif(100, 2, [-50,50]);
-a, b = simula_recta([-50,50]);
-y = np.array([f(x, y, a, b) for x, y in x], dtype=np.float64)
-recta_x = np.linspace(-50, 50, 2)
-recta_y = a*recta_x + b
+x = simula_unif(100, 2, [-50,50]); # Obtenemos 100 puntos aleatorios de una distribución uniforme en el intervalo anterior.
+a, b = simula_recta([-50,50]); # Obtenemos una recta dada por dos puntos aleatorios en el mismo intervalo.
+y = np.array([f(x, y, a, b) for x, y in x], dtype=np.float64) # Etiquetamos los puntos según su posición respecto a la recta.
 
-plt.scatter(x[np.where(y == 1), 0], x[np.where(y == 1), 1], c="purple")
-plt.scatter(x[np.where(y == -1), 0], x[np.where(y == -1), 1], c="orange")
-plt.plot(recta_x, recta_y, c="red")
+# Para mostrar los datos y la recta en una gráfica...
+recta_x = np.linspace(-50, 50, 2) # Obtenemos dos puntos aleatorios en el intervalo anterior.
+recta_y = a*recta_x + b # Calculamos las coordenadas y para los dos puntos aleatorios antes obtenidos.
+plt.scatter(x[np.where(y == 1), 0], x[np.where(y == 1), 1], c="purple") # Los puntos con signo positivo se dibujan en la
+                                                                        # gráfica con color morado.
+plt.scatter(x[np.where(y == -1), 0], x[np.where(y == -1), 1], c="orange") # Los puntos con signo negativo se dibujan en la
+                                                                          # gráfica con color naranja.
+plt.plot(recta_x, recta_y, c="red") # Usando los puntos calculados antes para la recta mostramos la frontera en la gráfica
+                                    # con color rojo.
 plt.legend(("Frontera","+1","-1"))
 plt.title("Ejercicio 1.2.a.")
 plt.show()
@@ -101,16 +108,22 @@ input("--- Pulsar tecla para continuar al ejercicio 1.2.b ---\n")
 # 1.2.b. - Modifique de forma aleatoria el 10% de las etiquetas positivas y otro 10% de las
 # negativas y guarde los puntos con sus nuevas etiquetas. Dibuje de nuevo la gráfica anterior.
 
+# Función para generar ruido en un vector de etiquetas 'y'.
 def generar_ruido(y):
-    y_positivo = np.where(y == 1)[0]
-    y_negativo = np.where(y == -1)[0]
+    y_positivo = np.where(y == 1)[0] # Obtenemos los índices de las etiquetas que son de signo positivo.
+    y_negativo = np.where(y == -1)[0] # Obtenemos los índices de las etiquetas son de signo negativo.
+    # Cogemos un 10% de índices aleatorios de las etiquetas positivas y otro 10% de las negativas, 
+    # asegurándonos que los índices no se pueden repetir especificando 'replace=False'.
     index_positivo = np.random.choice(y_positivo, y_positivo.size//10, replace=False)
     index_negativo = np.random.choice(y_negativo, y_negativo.size//10, replace=False)
+    # Multiplicamos por -1 el 10% aleatorio de etiquetas positivas y el 10% aleatorio de etiquetas negativas.
     y[index_positivo] *= -1
     y[index_negativo] *= 1
     
 print("Se muestra gráfica...")
-y_ruido = y.copy()
+y_ruido = y.copy() # Hago una copia en memoria de 'y' porque sino los cambios en 'y_ruido' afectarían tambień a 'y'
+                   # por ser arrays de numpy.
+# Se introduce el ruido y se visualiza con la misma recta frontera anterior.
 generar_ruido(y_ruido)
 plt.scatter(x[np.where(y_ruido == 1), 0], x[np.where(y_ruido == 1), 1], c="purple")
 plt.scatter(x[np.where(y_ruido == -1), 0], x[np.where(y_ruido == -1), 1], c="orange")
@@ -172,6 +185,7 @@ def plot_datos_cuad(X, y, fz, title='Point cloud plot', xaxis='x axis', yaxis='y
     plt.title(title)
     plt.show()
     
+# Se visualizan las funciones y los puntos etiquetados por 'y_ruido' utilizando la función plot_datos_cuad.
 print("Se muestra gŕafica de la primera función...")
     
 plot_datos_cuad(x, y_ruido, f1, "f(x,y) = (x-10)^2 + (y-20)^2 - 400", "Eje x", "Eje y")
@@ -193,15 +207,21 @@ print("\n-Ejercicio 2-\n")
 
 # 2.a. - Implementar la función que calcula el hiperpalo solución a un problema de clasificación
 # binaria usando el algoritmo PLA.
+
+# Perceptron Learning Algorithm (PLA).
+# Como entrada tenemos el conjunto de datos 'datos' con sus respectivas características,
+# el conjunto de etiquetas 'y' para cada dato, el número máximo de iteraciones 'max_iter' 
+# y el vector de pesos inicial 'vini'.
 def ajusta_PLA(datos, label, max_iter, vini):
-    w = vini
-    it = 0
-    for it in range(0, max_iter):
-        w_ant = w
-        for i in range(0, datos.shape[0]):
-            if signo(np.matmul(w, datos[i])) != label[i]:
-                w = w + label[i]*datos[i]
-        if (w_ant == w).all():
+    w = vini # Inicializamos w a vini.
+    it = 0 # Inicializamos el número de iteraciones a 0 en una variable aparte para luego poder devolverla.
+    for it in range(0, max_iter): # Hasta que no superemos el máximo de iteraciones...
+        w_ant = w # Guardamos el w previo a recorrer los datos.
+        for i in range(0, datos.shape[0]): # Recorremos los datos.
+            if signo(np.matmul(w, datos[i])) != label[i]: # Por cada dato donde la estimación dada por la w
+                                                          # no coincide con la etiqueta...
+                w = w + label[i]*datos[i] # Actualizamos w dada la ecuación w_new = w_old + y_i*x_i
+        if (w_ant == w).all(): # Si después de recorrer los datos no ha habido cambio, para el algoritmo.
             break
     return w, it
 
@@ -371,6 +391,10 @@ print("Ein promedio: ", Ein_promedio/n)
 print("Eout promedio: ", Eout_promedio/n)
 
 input("--- Pulsar tecla para continuar al ejercicio 3 ---\n")
+
+###############################################################################
+###############################################################################
+###############################################################################
 
 # EJERCICIO 3. BONUS: Clasificación de dígitos.
 print("\n-Ejercicio 3-\n")
