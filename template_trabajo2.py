@@ -215,7 +215,7 @@ print("\n-Ejercicio 2-\n")
 def ajusta_PLA(datos, label, max_iter, vini):
     w = vini # Inicializamos w a vini.
     it = 0 # Inicializamos el número de iteraciones a 0 en una variable aparte para luego poder devolverla.
-    for it in range(0, max_iter): # Hasta que no superemos el máximo de iteraciones...
+    for it in range(0, max_iter): # Mientras no superemos el máximo de iteraciones...
         w_ant = w # Guardamos el w previo a recorrer los datos.
         for i in range(0, datos.shape[0]): # Recorremos los datos.
             if signo(np.matmul(w, datos[i])) != label[i]: # Por cada dato donde la estimación dada por la w
@@ -296,11 +296,11 @@ input("--- Pulsar tecla para continuar al ejercicio 2.b. ---\n")
 from sklearn.utils import shuffle # Para barajar los minibatches en SGD.
 from scipy.special import expit # Función sigmoide para el error en regresión logística.
 
-# Función de error para Regresión Logística. Ein = 1/N Σ ln(1 + e^(-yi*w*xi))
+# Función de error para Regresión Logística. Ein = 1/N*Σ(ln(1 + e^(-yi*w*xi)))
 def Err(x, y, w):
     return np.log(1+np.exp(-y * np.dot(w, x.T))).mean()
 
-# Función gradiente del error de Regresión Logística. ▽Ein(w) = 1/N Σ(-yi*xi*σ(-yi*w*xi))
+# Función gradiente del error de Regresión Logística. ▽Ein(w) = 1/N*Σ(-yi*xi*σ(-yi*w*xi))
 def gradErr(x, y, w):
     return np.dot(np.dot(-y, x), expit(np.dot(-y, np.dot(w, x.T))))
 
@@ -460,6 +460,8 @@ def pseudoinverse(x, y):
 
 #POCKET ALGORITHM
 
+# Error de clasificación para Pocket. 1/N*Σ(sign(w*xn) ≠ yn)
+# El sumatorio de todas las etiquetas estimadas que no coinciden con las etiquetas de 'y'.
 def ErrorPLA(datos, label, w):
     total = 0
     for i in range(0, datos.shape[0]):
@@ -467,20 +469,26 @@ def ErrorPLA(datos, label, w):
             total += 1
     return total/datos.shape[0]
 
+# Algoritmo Pocket.
+# Como entrada tenemos el conjunto de datos 'datos' con sus respectivas características,
+# el conjunto de etiquetas 'y' para cada dato, el número máximo de iteraciones 'max_iter'
+# y el vector inicial 'vini'.
 def PLA_pocket(datos, label, max_iter, vini):
-    w = vini
-    error_min = ErrorPLA(datos, label, w)
-    for it in range(0, max_iter):
-        w1, one_update = ajusta_PLA(datos, label, 1, w)
-        error = ErrorPLA(datos, label, w1)
-        if error_min > error:
-            w = w1
-            error_min = error
-    return w
+    w = vini # Inicializamos w al vector inicial.
+    error_min = ErrorPLA(datos, label, w) # Calculamos y guardamos el error inicial.
+    for it in range(0, max_iter): # Mientras no superemos el máximo de iteraciones...
+        w1, one_update = ajusta_PLA(datos, label, 1, w) # Ejecutamos PLA una sola época para obtener w(t+1).
+        error = ErrorPLA(datos, label, w1) # Calculamos el error de clasificación de w(t+1).
+        if error_min > error: # Si el error de w(t) es mayor que el de w(t+1).
+            w = w1 # Actualizamos w.
+            error_min = error # Guardamos el nuevo error mínimo.
+    return w # Devolvemos el w final.
 
-w_pinv = pseudoinverse(x, y)
-w_pocket = PLA_pocket(x, y, 1000, w_pinv)
+w_pinv = pseudoinverse(x, y) # Obtenemos w usando la pseudoinversa para la muestra de entrenamiento.
+w_pocket = PLA_pocket(x, y, 1000, w_pinv) # Obtenemos w usando Pocket para la misma muestra, con 1000 iteraciones y
+                                          # usando la estimación de la pseudoinversa como vector inicial.
 
+# Se imprimen los errores de entrada para ambos algoritmos.
 print("-PSEUDOINVERSA-")
 print("Ein: ", MSE(x, y, w_pinv))
 
@@ -491,7 +499,7 @@ recta_x = np.linspace(0, 1, 2)
 pinv_y = -(w_pinv[0]+w_pinv[1]*recta_x)/w_pinv[2]
 pocket_y = -(w_pocket[0]+w_pocket[1]*recta_x)/w_pocket[2]
 
-# Mostramos los datos
+# Mostramos las estimaciones obtenidas junto a los datos de entrenamiento.
 fig, ax = plt.subplots()
 ax.plot(np.squeeze(x[np.where(y == -1),1]), np.squeeze(x[np.where(y == -1),2]), 'o', color='red', label='4')
 ax.plot(np.squeeze(x[np.where(y == 1),1]), np.squeeze(x[np.where(y == 1),2]), 'o', color='blue', label='8')
@@ -505,6 +513,14 @@ plt.show()
 
 input("--- Pulsar tecla para mostrar los resultados de la muestra de prueba ---\n")
 
+# Se imprimen los errores de salida para ambos algoritmos.
+print("-PSEUDOINVERSA-")
+print("Eout: ", MSE(x_test, y_test, w_pinv))
+
+print("\n-POCKET-")
+print("Eout: ", ErrorPLA(x_test, y_test, w_pocket))
+
+# Mostramos las estimaciones obtenidas junto a los datos de prueba.
 fig, ax = plt.subplots()
 ax.plot(np.squeeze(x_test[np.where(y_test == -1),1]), np.squeeze(x_test[np.where(y_test == -1),2]), 'o', color='red', label='4')
 ax.plot(np.squeeze(x_test[np.where(y_test == 1),1]), np.squeeze(x_test[np.where(y_test == 1),2]), 'o', color='blue', label='8')
@@ -515,12 +531,6 @@ ax.set_xlim((0, 1))
 ax.set_ylim((-7, -1))
 plt.legend()
 plt.show()
-
-print("-PSEUDOINVERSA-")
-print("Eout: ", MSE(x_test, y_test, w_pinv))
-
-print("\n-POCKET-")
-print("Eout: ", ErrorPLA(x_test, y_test, w_pocket))
   
     
   
