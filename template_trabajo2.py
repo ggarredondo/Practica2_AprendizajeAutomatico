@@ -323,8 +323,7 @@ def sgdRL(initial_point, x, y, eta, minibatch_size):
         w_ant = w # Guardamos el w previo a recorrer los minibatches.
         for i in range(0, len(minibatches_x)): # Para cada minibatch...
             w = w - eta*gradErr(minibatches_x[i], minibatches_y[i], w) # Obtenemos el nuevo w dado wj = wj-η*dEin(w)/dwj .
-        parar = np.linalg.norm(w_ant - w) < 0.01 # Comprobamos que la norma de la diferencia entre el w anterior
-                                                 # y el w calculado sea menor que 0.01, en cuyo caso terminaría el algoritmo.
+        parar = np.linalg.norm(w_ant - w) < 0.01 # Comprobamos ||w(t-1) - w(t)|| < 0.01, en cuyo caso pararía el algoritmo.
         epocas += 1 # Y se suma una época.
     return w, epocas # Se devuelve el w resultante y el número de épocas total.
 
@@ -445,13 +444,6 @@ x_test, y_test = readData('datos/X_test.npy', 'datos/y_test.npy', [4,8], [-1,1])
 
 #LINEAR REGRESSION FOR CLASSIFICATION 
 
-# Error cuadrático para regresión lineal. E(hw) = 1/N*Σ(hw(xn) - yn)^2
-# Se utiliza matmul para la correcta multiplicación de matrices de 'x' y 'w', lo cual
-# nos da una fila de los valores estimados a la cual restamos 'y'. Hacemos el cuadrado
-# de la diferencia y hacemos la media.
-def MSE(x,y,w):
-    return ((np.matmul(x,w) - y)**2).mean(axis=0)
-
 # Pseudoinversa. w = X†*y
 # Para ello simplemente utilizamos matmul para multiplicar la pseudoinversa dada por
 # la función pinv de numpy con y.
@@ -490,7 +482,7 @@ w_pocket = PLA_pocket(x, y, 1000, w_pinv) # Obtenemos w usando Pocket para la mi
 
 # Se imprimen los errores de entrada para ambos algoritmos.
 print("-PSEUDOINVERSA-")
-print("Ein: ", MSE(x, y, w_pinv))
+print("Ein: ", ErrorPLA(x, y, w_pinv))
 
 print("\n-POCKET-")
 print("Ein: ", ErrorPLA(x, y, w_pocket))
@@ -515,7 +507,7 @@ input("--- Pulsar tecla para mostrar los resultados de la muestra de prueba ---\
 
 # Se imprimen los errores de salida para ambos algoritmos.
 print("-PSEUDOINVERSA-")
-print("Eout: ", MSE(x_test, y_test, w_pinv))
+print("Eout: ", ErrorPLA(x_test, y_test, w_pinv))
 
 print("\n-POCKET-")
 print("Eout: ", ErrorPLA(x_test, y_test, w_pocket))
