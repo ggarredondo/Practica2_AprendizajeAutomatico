@@ -42,7 +42,7 @@ def simula_recta(intervalo):
 
 # EJERCICIO 1.1: Dibujar una gráfica con la nube de puntos de salida correspondiente
 print("-Ejercicio 1-\n")
-print("-1.1.-\n\nSe muestra gráfica...")
+print("-1.1.a-\n\nSe muestra gráfica...")
 
 # 1.1.a. - Dibujar la gráfica para N=50, d=2 y rango=[-50,50] para una distribución uniforme.
 x = simula_unif(50, 2, [-50,50]) # Extraemos 50 datos aleatorios de 2 dimensiones de una distribución uniforme
@@ -68,7 +68,7 @@ input("--- Pulsar tecla para continuar al ejercicio 1.2 ---\n")
 ###############################################################################
 
 # EJERCICIO 1.2: Valoración de la influencia del ruido en la selección de la complejidad de la clase.
-print("\n-1.2-\n")
+print("\n-1.2.a-\n")
 
 # La funcion np.sign(0) da 0, lo que nos puede dar problemas
 def signo(x):
