@@ -480,22 +480,36 @@ w_pinv = pseudoinverse(x, y) # Obtenemos w usando la pseudoinversa para la muest
 w_pocket = PLA_pocket(x, y, 1000, w_pinv) # Obtenemos w usando Pocket para la misma muestra, con 1000 iteraciones y
                                           # usando la estimación de la pseudoinversa como vector inicial.
 
-# Se imprimen los errores de entrada para ambos algoritmos.
-print("-PSEUDOINVERSA-")
-print("Ein: ", ErrorPLA(x, y, w_pinv))
-
-print("\n-POCKET-")
-print("Ein: ", ErrorPLA(x, y, w_pocket))
-
+# Se calculan los puntos para cada recta.
 recta_x = np.linspace(0, 1, 2)
 pinv_y = -(w_pinv[0]+w_pinv[1]*recta_x)/w_pinv[2]
 pocket_y = -(w_pocket[0]+w_pocket[1]*recta_x)/w_pocket[2]
 
-# Mostramos las estimaciones obtenidas junto a los datos de entrenamiento.
+# Se imprime el error de entrada para la pseudoinversa.
+print("-PSEUDOINVERSA-")
+print("Ein: ", ErrorPLA(x, y, w_pinv))
+
+# Mostramos las estimaciones obtenidas junto a los datos de entrenamiento para la pseudoinversa.
 fig, ax = plt.subplots()
 ax.plot(np.squeeze(x[np.where(y == -1),1]), np.squeeze(x[np.where(y == -1),2]), 'o', color='red', label='4')
 ax.plot(np.squeeze(x[np.where(y == 1),1]), np.squeeze(x[np.where(y == 1),2]), 'o', color='blue', label='8')
 ax.plot(recta_x, pinv_y, color='purple', label='Pinv')
+ax.set(xlabel='Intensidad promedio', ylabel='Simetría', title='Digitos Manuscritos (TRAINING)')
+ax.set_xlim((0, 1))
+ax.set_ylim((-7, -1))
+plt.legend()
+plt.show()
+
+input("--- Pulsar tecla para mostrar los resultados de Pocket en la muestra de entrenamiento ---\n")
+
+# Se imprime el error de entrenamiento para Pocket.
+print("-POCKET-")
+print("Ein: ", ErrorPLA(x, y, w_pocket))
+
+# Mostramos las estimaciones obtenidas junto a los datos de entrenamiento para Pocket.
+fig, ax = plt.subplots()
+ax.plot(np.squeeze(x[np.where(y == -1),1]), np.squeeze(x[np.where(y == -1),2]), 'o', color='red', label='4')
+ax.plot(np.squeeze(x[np.where(y == 1),1]), np.squeeze(x[np.where(y == 1),2]), 'o', color='blue', label='8')
 ax.plot(recta_x, pocket_y, color='orange', label='Pocket')
 ax.set(xlabel='Intensidad promedio', ylabel='Simetría', title='Digitos Manuscritos (TRAINING)')
 ax.set_xlim((0, 1))
@@ -503,26 +517,40 @@ ax.set_ylim((-7, -1))
 plt.legend()
 plt.show()
 
-input("--- Pulsar tecla para mostrar los resultados de la muestra de prueba ---\n")
+input("--- Pulsar tecla para continuar con los resultados en la muestra de test ---\n")
 
-# Se imprimen los errores de salida para ambos algoritmos.
+# Se imprime el error de salida para la pseudoinversa.
 print("-PSEUDOINVERSA-")
 print("Eout: ", ErrorPLA(x_test, y_test, w_pinv))
 
-print("\n-POCKET-")
-print("Eout: ", ErrorPLA(x_test, y_test, w_pocket))
-
-# Mostramos las estimaciones obtenidas junto a los datos de prueba.
+# Mostramos las estimaciones obtenidas junto a los datos de prueba para la pseudoinversa.
 fig, ax = plt.subplots()
 ax.plot(np.squeeze(x_test[np.where(y_test == -1),1]), np.squeeze(x_test[np.where(y_test == -1),2]), 'o', color='red', label='4')
 ax.plot(np.squeeze(x_test[np.where(y_test == 1),1]), np.squeeze(x_test[np.where(y_test == 1),2]), 'o', color='blue', label='8')
 ax.plot(recta_x, pinv_y, color='purple', label='Pinv')
+ax.set(xlabel='Intensidad promedio', ylabel='Simetría', title='Digitos Manuscritos (TEST)')
+ax.set_xlim((0, 1))
+ax.set_ylim((-7, -1))
+plt.legend()
+plt.show()
+
+input("--- Pulsar tecla para mostrar los resultados de Pocket en la muestra de test ---\n")
+
+# Se imprime el error de salida para Pocket.
+print("-POCKET-")
+print("Eout: ", ErrorPLA(x_test, y_test, w_pocket))
+
+# Mostramos las estimaciones obtenidas junto a los datos de prueba para Pocket.
+fig, ax = plt.subplots()
+ax.plot(np.squeeze(x_test[np.where(y_test == -1),1]), np.squeeze(x_test[np.where(y_test == -1),2]), 'o', color='red', label='4')
+ax.plot(np.squeeze(x_test[np.where(y_test == 1),1]), np.squeeze(x_test[np.where(y_test == 1),2]), 'o', color='blue', label='8')
 ax.plot(recta_x, pocket_y, color='orange', label='Pocket')
 ax.set(xlabel='Intensidad promedio', ylabel='Simetría', title='Digitos Manuscritos (TEST)')
 ax.set_xlim((0, 1))
 ax.set_ylim((-7, -1))
 plt.legend()
 plt.show()
+
   
     
   
