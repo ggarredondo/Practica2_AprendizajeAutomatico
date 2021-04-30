@@ -476,6 +476,8 @@ def PLA_pocket(datos, label, max_iter, vini):
             error_min = error # Guardamos el nuevo error mínimo.
     return w # Devolvemos el w final.
 
+# 3.2.a. y 3.2.b - Generar gráficos separados de los datos de entrenamiento y test junt con la función
+# estimada y calcular los Ein y Etest.
 w_pinv = pseudoinverse(x, y) # Obtenemos w usando la pseudoinversa para la muestra de entrenamiento.
 w_pocket = PLA_pocket(x, y, 1000, w_pinv) # Obtenemos w usando Pocket para la misma muestra, con 1000 iteraciones y
                                           # usando la estimación de la pseudoinversa como vector inicial.
@@ -519,9 +521,9 @@ plt.show()
 
 input("--- Pulsar tecla para continuar con los resultados en la muestra de test ---\n")
 
-# Se imprime el error de salida para la pseudoinversa.
+# Se imprime el error de test para la pseudoinversa.
 print("-PSEUDOINVERSA-")
-print("Eout: ", ErrorPLA(x_test, y_test, w_pinv))
+print("Etest: ", ErrorPLA(x_test, y_test, w_pinv))
 
 # Mostramos las estimaciones obtenidas junto a los datos de prueba para la pseudoinversa.
 fig, ax = plt.subplots()
@@ -536,9 +538,9 @@ plt.show()
 
 input("--- Pulsar tecla para mostrar los resultados de Pocket en la muestra de test ---\n")
 
-# Se imprime el error de salida para Pocket.
+# Se imprime el error de test para Pocket.
 print("-POCKET-")
-print("Eout: ", ErrorPLA(x_test, y_test, w_pocket))
+print("Etest: ", ErrorPLA(x_test, y_test, w_pocket))
 
 # Mostramos las estimaciones obtenidas junto a los datos de prueba para Pocket.
 fig, ax = plt.subplots()
@@ -551,22 +553,27 @@ ax.set_ylim((-7, -1))
 plt.legend()
 plt.show()
 
+input("--- Pulsar tecla para continuar al ejercicio 3.2.c ---\n")
   
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
+# 3.2.c. - Obtener cotas sobre el verdadero valor de Eout para Ein y Etest.
+
+# Cota basada en Ein.
+# Eout(h) ≤ Ein(h) + √(1/2N * log(2/delta))
+delta = 0.05
+cota_sup = ErrorPLA(x, y, w_pocket) + np.sqrt((1/(2*x.shape[0]))*np.log(2/delta))
+print("Eout será menor o igual que ", cota_sup, "(cota basada en Ein)")
+
+# Cota basada en Etest.
+# Eout(h) ≤ Etest(h) + √(1/2N * log(2/delta))
+cota_sup = ErrorPLA(x_test, y_test, w_pocket) + np.sqrt((1/(2*x.shape[0]))*np.log(2/delta))
+print("Eout será menor o igual que ", cota_sup, "(cota basada en Etest)")
+
+
+
+
+
+
+
+
+
 
