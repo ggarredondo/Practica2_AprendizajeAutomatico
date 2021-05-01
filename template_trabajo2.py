@@ -561,12 +561,12 @@ input("--- Pulsar tecla para continuar al ejercicio 3.2.c ---\n")
 # Eout(h) ≤ Ein(h) + √(1/2N * log(2/delta))
 delta = 0.05
 cota_sup = ErrorPLA(x, y, w_pocket) + np.sqrt((1/(2*x.shape[0]))*np.log(2/delta))
-print("Eout será menor o igual que ", cota_sup, "(cota basada en Ein)")
+print("Eout será menor o igual que", cota_sup, "(cota basada en Ein)")
 
 # Cota basada en Etest.
 # Eout(h) ≤ Etest(h) + √(1/2N * log(2/delta))
 cota_sup = ErrorPLA(x_test, y_test, w_pocket) + np.sqrt((1/(2*x.shape[0]))*np.log(2/delta))
-print("Eout será menor o igual que ", cota_sup, "(cota basada en Etest)")
+print("Eout será menor o igual que", cota_sup, "(cota basada en Etest)")
 
 
 
